@@ -7,34 +7,38 @@ public class ClosestSeq {
 	public int closestSequence(int a[], int b[]) {
 		int lenA = a.length;
 		int lenB = b.length;
-		
-		int totalDiff = 0;
-		int index = 0;
-		
-		for (int i = 0; i < lenA; i++) {
-			int minDiff = Integer.MAX_VALUE;
 
-			for (int j = index; j <= lenB - lenA + i; j++) {
-				int diff = Math.abs(a[i] - b[j]);
-				
-				// if difference is 0, don't look further in array
-				if(diff == 0){
-					index = j + 1;
-					minDiff = 0;
-					break;
-				}
-				
-				if(diff < minDiff){
-					minDiff = diff;
-					index = j + 1;
-				}
-			}
-			totalDiff = totalDiff + minDiff; 
+		int mat[][] = new int[lenA][lenB];
+
+		// first element
+		mat[0][0] = Math.abs(a[0] - b[0]);
+
+		// fill differences in rest of the first row
+		for (int j = 1; j <= lenB - lenA; j++) {
+			int diff = Math.abs(a[0] - b[j]);
+			// store minimum value at every iteration from previous
+			mat[0][j] = min(diff, mat[0][j - 1]);
 		}
 
-		return totalDiff;
+		// fill rest of the matrix
+		for (int i = 1; i < lenA; i++) {
+			for (int j = i; j <= lenB - lenA + i; j++) {
+				int diff = Math.abs(a[i] - b[j]) + mat[i - 1][j - 1];
+				if (i == j) {
+					mat[i][j] = diff;
+				} else {
+					mat[i][j] = min(diff, mat[i][j - 1]);
+				}
+			}
+		}
+
+		return mat[lenA - 1][lenB - 1];
 	}
-	
+
+	private int min(int diff, int num) {
+		return (diff < num) ? diff : num;
+	}
+
 	public static void main(String[] args) {
 		Scanner in = new Scanner(System.in);
 		int i = 0;
